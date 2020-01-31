@@ -27,6 +27,7 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 
 import QRCodeScanner from 'react-native-qrcode-scanner';
+import DigitendanceNavigator from './src/navigation/DigitendanceNavigator';
 
 onSuccess = (e) => {
   console.log(e);
@@ -34,19 +35,20 @@ onSuccess = (e) => {
 
 const App: () => React$Node = () => {
   return (
-    <QRCodeScanner
-        onRead={onSuccess}  
-        topContent={
-          <Text style={styles.centerText}>
-            Go to <Text style={styles.textBold}>wikipedia.org/wiki/QR_code</Text> on your computer and scan the QR code.
-          </Text>
-        }
-        bottomContent={
-          <TouchableOpacity style={styles.buttonTouchable}>
-            {/* <Text style={styles.buttonText}>OK. Got it!</Text> */}
-          </TouchableOpacity>
-        }
-      />
+    <DigitendanceNavigator />
+    // <QRCodeScanner
+    //     onRead={onSuccess}  
+    //     topContent={
+    //       <Text style={styles.centerText}>
+    //         Go to <Text style={styles.textBold}>wikipedia.org/wiki/QR_code</Text> on your computer and scan the QR code.
+    //       </Text>
+    //     }
+    //     bottomContent={
+    //       <TouchableOpacity style={styles.buttonTouchable}>
+    //         {/* <Text style={styles.buttonText}>OK. Got it!</Text> */}
+    //       </TouchableOpacity>
+    //     }
+    //   />
   );
 };
 
