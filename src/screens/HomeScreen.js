@@ -21,14 +21,9 @@ const HomeScreen = props => {
             })
             .catch(error => {
                 Alert.alert(error.message);
+                setShowActivityIndicator(false);
             });
     }
-
-    
-
-    
-
-
 
     return (
 

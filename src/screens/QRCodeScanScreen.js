@@ -30,12 +30,14 @@ const QRCodeScanScreen = props => {
         const teacherName = data[0];
         const lectureName = data[1];
         const lectureDate = data[2];
+        const secret = data[3];
 
         if (!teacherName || !lectureName || !lectureDate) {
             Alert.alert("Error");
             return;
         }
         const db = firebase.database();
+
         let attendance = db.ref(`${teacherName}/${lectureDate}/${lectureName}`).push();
         attendance
         .update({ regNumber })
