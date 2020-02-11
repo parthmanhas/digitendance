@@ -1,49 +1,91 @@
-import React, { useState, useRef } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Button, Alert } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, StyleSheet, Text, TouchableOpacity, Button, Alert, ActivityIndicator } from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
-import CryptoJS from "react-native-crypto-js";
 import * as firebase from 'firebase';
-import { TextInput } from 'react-native-gesture-handler';
 
 const QRCodeScanScreen = props => {
 
     const scanAgain = useRef(null);
 
     const regNumber = props.navigation.getParam('studentRegNumber', undefined);
-    console.log(regNumber);
+    const studentName = props.navigation.getParam('studentName', undefined);
+    const [displayIndicator, setDisplayIndicator] = useState(false);
+    const [secret, setSecret] = useState();
+    const [scannedData, setScannedData] = useState(null);
+    const [data, setData] = useState({
+        'teacherName': null,
+        'eventName': null,
+        'eventDate': null,
+        'eventSecretScanned': null
+    });
+    const [path, setPath] = useState();
+
+    const db = firebase.database();
+
 
     const onSuccess = e => {
-        // let bytes = CryptoJS.AES.decrypt(e.data, 'secret key 123');
-        // let originalText = bytes.toString(CryptoJS.enc.Utf8);
-        // Alert.alert(originalText);
         if (!e.data) {
             Alert.alert("Error! Please Scan Again.");
+            setDisplayIndicator(false);
             return;
         }
 
         if (regNumber.length != 9) {
             Alert.alert("Incorrect Registration Number! Enter Again");
+            setDisplayIndicator(false);
             return;
         }
+        setDisplayIndicator(true);
+        setScannedData(e);
 
-        const data = e.data.split(';');
-        const teacherName = data[0];
-        const lectureName = data[1];
-        const lectureDate = data[2];
-        const secret = data[3];
+        const splitData = e.data.split(';');
+        setData({
+            'teacherName': splitData[0],
+            'eventName': splitData[1],
+            'eventDate': splitData[2],
+            'eventSecretScanned': splitData[3]
+        });
 
-        if (!teacherName || !lectureName || !lectureDate) {
-            Alert.alert("Error");
-            return;
-        }
-        const db = firebase.database();
+        // // let bytes = CryptoJS.AES.decrypt(e.data, 'secret key 123');
+        // // let originalText = bytes.toString(CryptoJS.enc.Utf8);
+        // // Alert.alert(originalText)
 
-        let attendance = db.ref(`${teacherName}/${lectureDate}/${lectureName}`).push();
-        attendance
-        .update({ regNumber })
-        .then(() => Alert.alert("Attendance Marked"))
-        .catch((error) => Alert.alert(error.message));
     }
+    useEffect(() => {
+        if (data.teacherName && data.eventName && data.eventDate && data.eventSecretScanned) {
+
+
+            setPath(`${data.teacherName}/${data.eventDate}/${data.eventName}`);
+
+            if (path) {
+                firebase.database().ref(path + '/secret').once('value')
+                    .then((snap) => {
+                        setSecret(snap.val());
+                    })
+                    .catch((error) => {
+                        Alert.alert(error.message);
+                        setSecret();
+                        setDisplayIndicator(false);
+                    })
+            }
+            
+            if (secret === data.eventSecretScanned) {
+                let attendance = db.ref(path + '/attendance').push();
+                attendance
+                    .set({ regNumber: regNumber, name: studentName })
+                    .then(() => {
+                        Alert.alert("Attendance Marked");
+                        setDisplayIndicator(false);
+                    })
+                    .catch((error) => {
+                        Alert.alert(error.message);
+                        setDisplayIndicator(false);
+                    });
+            }
+
+        }
+    }, [scannedData, data, path, secret]);
+
 
     const onScanAgain = () => {
         scanAgain.current.reactivate();
@@ -55,10 +97,13 @@ const QRCodeScanScreen = props => {
             fadeIn={true}
             ref={scanAgain}
             bottomContent={
-                // <Button title="Scan Again" onPress={onScanAgain} />
-                <TouchableOpacity style={styles.buttonTouchable} onPress={onScanAgain}>
-                    <Text style={styles.buttonText}>Scan Again</Text>
-                </TouchableOpacity>
+                <View>
+                    <ActivityIndicator animating={displayIndicator} />
+                    <TouchableOpacity style={styles.buttonTouchable} onPress={onScanAgain} disabled={displayIndicator}>
+                        <Text style={styles.buttonText}>Scan Again</Text>
+                    </TouchableOpacity>
+                </View>
+
             }
         />
 

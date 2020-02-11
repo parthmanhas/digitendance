@@ -32,7 +32,7 @@ const EnterDetailsScreen = props => {
             Alert.alert("Please Enter Correct Information");
             return;
         }
-        console.log(regNumber);
+        // console.log(regNumber);
         props.navigation.navigate('QRScan', {
             studentName:name,
             studentRegNumber:regNumber
