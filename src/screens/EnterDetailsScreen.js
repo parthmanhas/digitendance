@@ -4,9 +4,10 @@ import { Container, Content, Header, Form, Input, Item, Button, Label, Spinner, 
 
 const EnterDetailsScreen = props => {
 
-    const [regNumber, setRegNumber] = useState('');
-    const [name, setName] = useState('');
-    const [disableButton, setDisableButton] = useState(true);
+    //$ TODO REMOVE DEFAULT VALUES
+    const [regNumber, setRegNumber] = useState('169105124');
+    const [name, setName] = useState('Parth Manhas');
+    const [disableButton, setDisableButton] = useState(false);
 
     const handleNameInput = name => {
         setName(name);
@@ -69,6 +70,7 @@ const EnterDetailsScreen = props => {
                                 >
                                     <Text style={{color:'white'}}>Proceed</Text>
                                 </Button>
+                                
                         </Body>
                     </CardItem>
                 </Card>

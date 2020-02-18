@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Button, Alert, ActivityIndicator } from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
-import * as firebase from 'firebase';
+import * as firebaseWrapper from '../components/firebaseWrapper';
 
 const QRCodeScanScreen = props => {
 
@@ -20,7 +20,7 @@ const QRCodeScanScreen = props => {
     });
     const [path, setPath] = useState();
 
-    const db = firebase.database();
+
 
 
     const onSuccess = e => {
@@ -54,34 +54,7 @@ const QRCodeScanScreen = props => {
     useEffect(() => {
         if (data.teacherName && data.eventName && data.eventDate && data.eventSecretScanned) {
 
-
-            setPath(`${data.teacherName}/${data.eventDate}/${data.eventName}`);
-
-            if (path) {
-                firebase.database().ref(path + '/secret').once('value')
-                    .then((snap) => {
-                        setSecret(snap.val());
-                    })
-                    .catch((error) => {
-                        Alert.alert(error.message);
-                        setSecret();
-                        setDisplayIndicator(false);
-                    })
-            }
-            
-            if (secret === data.eventSecretScanned) {
-                let attendance = db.ref(path + '/attendance').push();
-                attendance
-                    .set({ regNumber: regNumber, name: studentName })
-                    .then(() => {
-                        Alert.alert("Attendance Marked");
-                        setDisplayIndicator(false);
-                    })
-                    .catch((error) => {
-                        Alert.alert(error.message);
-                        setDisplayIndicator(false);
-                    });
-            }
+            firebaseWrapper.QRCodeScan(data, setSecret, setPath, setDisplayIndicator, studentName, regNumber);
 
         }
     }, [scannedData, data, path, secret]);

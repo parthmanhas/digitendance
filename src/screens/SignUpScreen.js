@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Text, Alert } from 'react-native';
+import { View, StyleSheet, Text, Alert, YellowBox } from 'react-native';
 import { Container, Content, Header, Form, Input, Item, Button, Label, Spinner, Card, CardItem, Body } from 'native-base'
-import * as firebase from 'firebase';
+import * as firebaseWrapper from '../components/firebaseWrapper';
 
 const SignUpScreen = props => {
 
@@ -19,19 +19,10 @@ const SignUpScreen = props => {
                 return;
             }
 
-            firebase.auth().createUserWithEmailAndPassword(email, password)
-                .then(() => {
-                    Alert.alert("Sign Up Successful! Please Login!");
-                    setDisableButton(false);
-                    props.navigation.pop();
-                })
-                .catch(error => {
-                    Alert.alert(error.message);
-                    setDisableButton(false);
-                })
+            firebaseWrapper.SignUp(username, email, setDisableButton);
         }
         catch (error) {
-            console.log(error.toString());
+            Alert.alert(error);
         }
     }
 
@@ -62,7 +53,7 @@ const SignUpScreen = props => {
                             </Item>
                             <Item floatingLabel>
                                 <Label>Password</Label>
-                                <Input 
+                                <Input
                                     secureTextEntry={true}
                                     onChangeText={handlePasswordInput}
                                     value={password}
@@ -87,9 +78,9 @@ const SignUpScreen = props => {
 }
 
 const styles = StyleSheet.create({
-    cardHeader:{
+    cardHeader: {
         fontSize: 20,
-        fontWeight: "bold",    
+        fontWeight: "bold",
     }
 });
 
