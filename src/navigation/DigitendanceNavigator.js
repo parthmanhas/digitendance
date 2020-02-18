@@ -7,7 +7,12 @@ import SignUpScreen from '../screens/SignUpScreen';
 import EnterDetailsScreen from '../screens/EnterDetailsScreen';
 
 const DigitendanceNavigator = createStackNavigator({
-    Home: HomeScreen,
+    Home: {
+        screen: HomeScreen,
+        navigationOptions:{
+            title: 'Digitendance_Student'
+        }
+    },
     QRScan: QRCodeScanScreen,
     SignUp: SignUpScreen,
     EnterDetails: EnterDetailsScreen

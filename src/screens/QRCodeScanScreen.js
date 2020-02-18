@@ -54,7 +54,7 @@ const QRCodeScanScreen = props => {
     useEffect(() => {
         if (data.teacherName && data.eventName && data.eventDate && data.eventSecretScanned) {
 
-            firebaseWrapper.QRCodeScan(data, setSecret, setPath, setDisplayIndicator, studentName, regNumber);
+            firebaseWrapper.QRCodeScan(data, studentName, regNumber, setDisplayIndicator);
 
         }
     }, [scannedData, data, path, secret]);

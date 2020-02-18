@@ -7,17 +7,9 @@ import App from './App';
 import { name as appName } from './app.json';
 import 'react-native-gesture-handler';
 import * as firebase from 'firebase';
-import { YellowBox } from 'react-native';
-import _ from 'lodash';
-import { PermissionsAndroid } from 'react-native';
+import ignoreWarnings from 'react-native-ignore-warnings';
 
-YellowBox.ignoreWarnings(['Setting a timer']);
-const _console = _.clone(console);
-console.warn = message => {
-  if (message.indexOf('Setting a timer') <= -1) {
-    _console.warn(message);
-  }
-};
+ignoreWarnings('Setting a timer');
 
 const firebaseConfig = {
   apiKey: "AIzaSyA2tPKcoAkn7jEafTBUgQjXlq56Mgyl1Bo",

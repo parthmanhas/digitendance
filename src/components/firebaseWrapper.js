@@ -1,5 +1,6 @@
 import { Alert } from 'react-native';
 import * as firebase from 'firebase';
+import store from '../store/store';
 
 export function SignUp(email, password) {
     firebase.auth().createUserWithEmailAndPassword(email, password)
@@ -29,36 +30,56 @@ export function Login(email, password, props, setShowActivityIndicator) {
         });
 }
 
-export function QRCodeScan(data, setSecret, setPath, setDisplayIndicator, studentName, regNumber) {
+export function QRCodeScan(data, studentName, regNumber, setDisplayIndicator) {
 
     const db = firebase.database();
 
-    setPath(`${data.teacherName}/${data.eventDate}/${data.eventName}`);
+    const path = `${data.teacherName}/${data.eventDate}/${data.eventName}`;
+    console.log(path);
+    let eventInformation;
+
 
     if (path) {
-        firebase.database().ref(path + '/secret').once('value')
+        firebase.database().ref(path + '/eventInformation').once('value')
             .then((snap) => {
-                setSecret(snap.val());
+                eventInformation = snap.val();
+            })
+            .then(() => {
+                let x1 = Number(eventInformation.coords.latitude);
+                let y1 = Number(eventInformation.coords.longitude);
+                let r = Number(eventInformation.coords.accuracy);
+
+                let currentLocation = store.getState().location;
+
+                let x = Number(currentLocation.latitude);
+                let y = Number(currentLocation.longitude);
+                console.log();
+
+                if (eventInformation.secret === data.eventSecretScanned &&
+                    ((x - x1) * (x - x1) + (y - y1) * (y - y1) - r * r) < 0) {
+                    let attendance = db.ref(path + '/attendance').push();
+                    attendance
+                        .set({ regNumber: regNumber, name: studentName })
+                        .then(() => {
+                            Alert.alert("Attendance Marked");
+                            setDisplayIndicator(false);
+                        })
+                        .catch((error) => {
+                            Alert.alert(error.message);
+                            setDisplayIndicator(false);
+                        });
+                }
             })
             .catch((error) => {
                 Alert.alert(error.message);
-                setSecret();
                 setDisplayIndicator(false);
             })
+
     }
 
-    if (secret === data.eventSecretScanned) {
-        let attendance = db.ref(path + '/attendance').push();
-        attendance
-            .set({ regNumber: regNumber, name: studentName })
-            .then(() => {
-                Alert.alert("Attendance Marked");
-                setDisplayIndicator(false);
-            })
-            .catch((error) => {
-                Alert.alert(error.message);
-                setDisplayIndicator(false);
-            });
-    }
+    //check whether current coords coincide with noted coords
+    console.log(store.getState());
+
+
 }
 

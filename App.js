@@ -8,23 +8,19 @@
 
 import React, { useEffect } from 'react';
 import DigitendanceNavigator from './src/navigation/DigitendanceNavigator';
-import { createStore, combineReducers } from 'redux';
-import locationReducer from './src/store/reducers/location'
-import { Provider, useDispatch } from 'react-redux';
+import store from './src/store/store';
+import { Provider } from 'react-redux';
 import { useState } from 'react';
 import { Text, Alert } from 'react-native';
 import { PermissionsAndroid } from 'react-native';
 import { setLocation } from './src/store/actions/location';
+import Geolocation from 'react-native-geolocation-service';
 
-const rootReducer = combineReducers({
-  location: locationReducer
-})
-
-const store = createStore(rootReducer);
 
 const App: () => React$Node = () => {
 
   const [access, setAccess] = useState(false);
+  const [position, setPosition] = useState();
 
   async function hasLocation() {
     try {
@@ -48,12 +44,27 @@ const App: () => React$Node = () => {
 
   useEffect(() => {
     hasLocation();
-    store.dispatch(setLocation());
-    // an api call within reducer is a no no
-    console.log(store.getState());
-    console.log("jhgjhjh");
-  }, []);
+    if (!position) {
+      findMyLocation();
+    }
+    else {
+      store.dispatch(setLocation(position));
+    }
+  }, [position]);
 
+  async function findMyLocation() {
+    if (PermissionsAndroid.RESULTS.GRANTED) {
+      Geolocation.getCurrentPosition(
+        position => {
+          // console.log(JSON.stringify(position));
+          // console.log(position.coords.latitude);
+          setPosition(position);
+        },
+        error => Alert.alert(error.message),
+        { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+      );
+    }
+  }
 
   return (
 
