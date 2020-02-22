@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Text, Alert } from 'react-native';
+import { View, StyleSheet, Text, Alert, YellowBox } from 'react-native';
 import { Container, Content, Header, Form, Input, Item, Button, Label, Spinner } from 'native-base'
 import * as firebaseWrapper from '../components/firebaseWrapper';
 
@@ -18,6 +18,9 @@ const HomeScreen = props => {
 
     return (
         <Container style={styles.screen}>
+            <View style={styles.title}>
+                <Text style={{ fontSize: 22 }}>Digitendance Student</Text>
+            </View>
             <Form>
                 <Item floatingLabel>
                     <Label>Email</Label>
@@ -40,9 +43,9 @@ const HomeScreen = props => {
                 <View>
                     <Button
                         full
-                        rounded
                         success
                         disabled={showActivityIndicator}
+                        style={{ borderRadius: 6 }}
                         onPress={() => loginUser(email, password)}
                     >
                         <Text style={{ color: 'white' }}>Login</Text>
@@ -52,9 +55,8 @@ const HomeScreen = props => {
                 <View>
                     <Button
                         onPress={() => props.navigation.navigate('SignUp')}
-                        style={{ marginTop: 10 }}
+                        style={{ marginTop: 10, borderRadius: 6 }}
                         full
-                        rounded
                         primary
                         disabled={showActivityIndicator}
                     >
@@ -71,8 +73,13 @@ const styles = StyleSheet.create({
     screen: {
         flex: 1,
         padding: 10,
-        justifyContent: 'center'
+        justifyContent: 'center',
+    },
+    title: {
+        justifyContent: 'center',
+        alignItems: 'center',
     }
+
 });
 
 export default HomeScreen;

@@ -27,10 +27,9 @@ const App: () => React$Node = () => {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
         {
-          title: 'Cool Photo App Camera Permission',
+          title: 'Digitendance Location Access',
           message:
-            'Cool Photo App needs access to your camera ' +
-            'so you can take awesome pictures.',
+            'Digitendance needs access to your location',
           buttonNeutral: 'Ask Me Later',
           buttonNegative: 'Cancel',
           buttonPositive: 'OK',
@@ -73,7 +72,7 @@ const App: () => React$Node = () => {
         <DigitendanceNavigator />
       )
         : (
-          <Text>Please Enable Location and Restart the app</Text>
+          <Text style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>Please Enable Location and Restart the app</Text>
         )}
     </Provider>
   );

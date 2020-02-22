@@ -1,6 +1,9 @@
 import { Alert } from 'react-native';
 import * as firebase from 'firebase';
 import store from '../store/store';
+import { getMacAddress, getDeviceId, getManufacturer } from 'react-native-device-info';
+
+const ADD_RADIUS = 250;
 
 export function SignUp(email, password) {
     firebase.auth().createUserWithEmailAndPassword(email, password)
@@ -30,17 +33,29 @@ export function Login(email, password, props, setShowActivityIndicator) {
         });
 }
 
-export function QRCodeScan(data, studentName, regNumber, setDisplayIndicator) {
+export function QRCodeScan(data, studentName, regNumber, comment, time) {
 
     const db = firebase.database();
 
     const path = `${data.teacherName}/${data.eventDate}/${data.eventName}`;
-    console.log(path);
+    const eventInformationPath = path + '/eventInformation';
+    const attendancePath = path + '/attendance';
+    // console.log(path);
     let eventInformation;
+    let deviceId;
+    let manufacturer;
+
+    deviceId = getDeviceId();
+    getManufacturer()
+        .then(m => manufacturer = m)
+        .catch(e => {
+            Alert.alert(e.message);
+            return;
+        })
 
 
     if (path) {
-        firebase.database().ref(path + '/eventInformation').once('value')
+        firebase.database().ref(eventInformationPath).once('value')
             .then((snap) => {
                 eventInformation = snap.val();
             })
@@ -53,33 +68,43 @@ export function QRCodeScan(data, studentName, regNumber, setDisplayIndicator) {
 
                 let x = Number(currentLocation.latitude);
                 let y = Number(currentLocation.longitude);
-                console.log();
 
-                if (eventInformation.secret === data.eventSecretScanned &&
-                    ((x - x1) * (x - x1) + (y - y1) * (y - y1) - r * r) < 0) {
-                    let attendance = db.ref(path + '/attendance').push();
-                    attendance
-                        .set({ regNumber: regNumber, name: studentName })
-                        .then(() => {
-                            Alert.alert("Attendance Marked");
-                            setDisplayIndicator(false);
-                        })
-                        .catch((error) => {
-                            Alert.alert(error.message);
-                            setDisplayIndicator(false);
-                        });
+                let addRadius = ADD_RADIUS;
+                r += addRadius;
+
+                if (eventInformation.secret === data.eventSecretScanned) {
+
+                    if (((x - x1) * (x - x1) + (y - y1) * (y - y1) - r * r) < 0) {
+                        let attendance = db.ref(attendancePath).push();
+                        attendance
+                            .set({
+                                regNumber: regNumber,
+                                name: studentName,
+                                time: time,
+                                comment: comment,
+                                deviceId: deviceId,
+                                manufacturer: manufacturer
+                            })
+                            .then(() => {
+                                Alert.alert("Attendance Marked");
+
+                            })
+                            .catch((error) => {
+                                Alert.alert(error.message);
+
+                            });
+                    }
+                    else {
+                        Alert.alert("Please be present near teacher!");
+                    }
                 }
             })
             .catch((error) => {
                 Alert.alert(error.message);
-                setDisplayIndicator(false);
             })
 
     }
 
-    //check whether current coords coincide with noted coords
-    console.log(store.getState());
-
-
 }
+
 

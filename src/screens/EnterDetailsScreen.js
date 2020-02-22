@@ -1,6 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Alert } from 'react-native';
 import { Container, Content, Header, Form, Input, Item, Button, Label, Spinner, Card, CardItem, Body } from 'native-base'
+import store from '../store/store';
+import { setStudentDetails } from '../store/actions/studentDetails';
 
 const EnterDetailsScreen = props => {
 
@@ -33,15 +35,16 @@ const EnterDetailsScreen = props => {
             Alert.alert("Please Enter Correct Information");
             return;
         }
-        // console.log(regNumber);
+        store.dispatch(setStudentDetails({ name: name, regNumber: regNumber }))
+        
         props.navigation.navigate('QRScan', {
-            studentName:name,
-            studentRegNumber:regNumber
+            studentName: name,
+            studentRegNumber: regNumber
         });
     }
 
     return (
-        
+
         <Container>
             <Content padder>
                 <Card>
@@ -62,15 +65,15 @@ const EnterDetailsScreen = props => {
                                     value={name}
                                 />
                             </Item>
-                                <Button
-                                    full
-                                    success
-                                    disabled={disableButton}
-                                    onPress={handleNavigation}
-                                >
-                                    <Text style={{color:'white'}}>Proceed</Text>
-                                </Button>
-                                
+                            <Button
+                                full
+                                success
+                                disabled={disableButton}
+                                onPress={handleNavigation}
+                            >
+                                <Text style={{ color: 'white' }}>Proceed</Text>
+                            </Button>
+
                         </Body>
                     </CardItem>
                 </Card>
@@ -80,11 +83,11 @@ const EnterDetailsScreen = props => {
 };
 
 const styles = StyleSheet.create({
-    buttonContainer:{
+    buttonContainer: {
         flex: 1,
         backgroundColor: 'yellow',
-        margin:10,
-        alignContent:'center'
+        margin: 10,
+        alignContent: 'center'
     }
 });
 
