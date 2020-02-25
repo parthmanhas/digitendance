@@ -10,31 +10,23 @@ import QRSuccess from '../screens/QRSuccess';
 const DigitendanceNavigator = createStackNavigator({
     Home: {
         screen: HomeScreen,
-        navigationOptions: {
-            headerShown: false,
-        }
     },
     QRScan: {
         screen: QRCodeScanScreen,
-        navigationOptions: {
-            title: 'Scan QR'
-        }
     },
     SignUp: {
         screen: SignUpScreen,
-        navigationOptions: {
-            title: 'Sign Up Here!'
-        }
     },
     EnterDetails: {
         screen: EnterDetailsScreen,
-        navigationOptions: {
-            title: 'Please Enter your details Carefully'
-        }
     },
     Success: {
         screen: QRSuccess,
     },
+}, {
+    defaultNavigationOptions:{
+        headerShown: false
+    }
 });
 
 export default createAppContainer(DigitendanceNavigator);

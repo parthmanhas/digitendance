@@ -36,7 +36,7 @@ const EnterDetailsScreen = props => {
             return;
         }
         store.dispatch(setStudentDetails({ name: name, regNumber: regNumber }))
-        
+
         props.navigation.navigate('QRScan', {
             studentName: name,
             studentRegNumber: regNumber
@@ -47,7 +47,10 @@ const EnterDetailsScreen = props => {
 
         <Container>
             <Content padder>
-                <Card>
+                <Card style={{ backgroundColor: 'yellow' }}>
+                    <CardItem header >
+                        <Text style={{fontSize: 22, fontWeight:'bold'}}>Enter Details</Text>
+                    </CardItem>
                     <CardItem>
                         <Body>
                             <Item style={{ margin: 10 }} floatingLabel>
@@ -70,6 +73,7 @@ const EnterDetailsScreen = props => {
                                 success
                                 disabled={disableButton}
                                 onPress={handleNavigation}
+                                style={styles.button}
                             >
                                 <Text style={{ color: 'white' }}>Proceed</Text>
                             </Button>
@@ -88,6 +92,9 @@ const styles = StyleSheet.create({
         backgroundColor: 'yellow',
         margin: 10,
         alignContent: 'center'
+    },
+    button:{
+        borderRadius: 6
     }
 });
 

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Text, Alert, YellowBox } from 'react-native';
+import { View, StyleSheet, Text, Image } from 'react-native';
 import { Container, Content, Header, Form, Input, Item, Button, Label, Spinner } from 'native-base'
 import * as firebaseWrapper from '../components/firebaseWrapper';
+import * as colors from '../constants/color';
 
 const HomeScreen = props => {
 
@@ -18,8 +19,8 @@ const HomeScreen = props => {
 
     return (
         <Container style={styles.screen}>
-            <View style={styles.title}>
-                <Text style={{ fontSize: 22 }}>Digitendance Student</Text>
+            <View style={styles.logo}>
+                <Image source={require('../assets/logo.png')} style={{ width: 150, height: 150 }} />
             </View>
             <Form>
                 <Item floatingLabel>
@@ -74,11 +75,15 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 10,
         justifyContent: 'center',
+        backgroundColor: colors.BACKGROUND
     },
     title: {
         justifyContent: 'center',
         alignItems: 'center',
-    }
+    },
+    logo: {
+        alignItems: 'center',
+    },
 
 });
 
