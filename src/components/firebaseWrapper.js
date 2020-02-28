@@ -5,7 +5,7 @@ import { getDeviceId, getManufacturer } from 'react-native-device-info';
 
 const ADD_RADIUS = 250;
 
-export function SignUp(email, password) {
+export function SignUp(email, password, setDisableButton, props) {
     firebase.auth().createUserWithEmailAndPassword(email, password)
         .then(() => {
             Alert.alert("Sign Up Successful! Please Login!");
@@ -20,6 +20,8 @@ export function SignUp(email, password) {
 
 export function Login(email, password, props, setShowActivityIndicator) {
     //$TODO REMOVE THIS LOGIN
+    // email = 'student1@gmail.com';
+    // password = 'student1';
     firebase.auth().signInWithEmailAndPassword(email, password)
         .then(() => {
             setShowActivityIndicator(false);
@@ -31,7 +33,7 @@ export function Login(email, password, props, setShowActivityIndicator) {
         });
 }
 
-export function QRCodeScan(data, studentName, regNumber, comment, time) {
+export function QRCodeScan(data, studentName, regNumber, comment, time, setEnableScan) {
 
     const db = firebase.database();
 
@@ -47,74 +49,85 @@ export function QRCodeScan(data, studentName, regNumber, comment, time) {
     getManufacturer()
         .then(m => manufacturer = m)
         .catch(e => {
-            Alert.alert(e.message);
-            return;
+            // Alert.alert(e.message);
+            manufacturer= 'null';
         })
 
 
     if (path) {
-        let data;
-        console.log(attendancePath);
-        firebase.database().ref(attendancePath).once('value')
-            .then(snap => {
-                data = snap.val();
-                for (const uniqueKey in data) {
-                    for (const value in data[uniqueKey]) {
-                        if (value === 'deviceId' && deviceId === data[uniqueKey][value]) {
-                            Alert.alert('Device has been already used!');
-                            return;
-                        }
-                    }
-                }
+        // let data;
+        // console.log(attendancePath);
+        // firebase.database().ref(attendancePath).once('value')
+        //     .then(snap => {
+        //         data = snap.val();
+        //         console.log(data);
+        //         for (const uniqueKey in data) {
+        //             for (const value in data[uniqueKey]) {
+        //                 if (value === 'deviceId' && deviceId === data[uniqueKey][value]) {
+        //                     Alert.alert('Device has been already used!');
+        //                     return;
+        //                 }
+        //             }
+        //         }
+        //         return;
+        //     })
+        //     .then(() => { })
+
+        firebase.database().ref(eventInformationPath).once('value')
+            .then((snap) => {
+                eventInformation = snap.val();
             })
             .then(() => {
-                firebase.database().ref(eventInformationPath).once('value')
-                    .then((snap) => {
-                        eventInformation = snap.val();
-                    })
-                    .then(() => {
-                        let x1 = Number(eventInformation.coords.latitude);
-                        let y1 = Number(eventInformation.coords.longitude);
-                        let r = Number(eventInformation.coords.accuracy);
+                let x1 = Number(eventInformation.coords.latitude);
+                let y1 = Number(eventInformation.coords.longitude);
+                let r = Number(eventInformation.coords.accuracy);
 
-                        let currentLocation = store.getState().location;
+                let currentLocation = store.getState().location;
 
-                        let x = Number(currentLocation.latitude);
-                        let y = Number(currentLocation.longitude);
+                let x = Number(currentLocation.latitude);
+                let y = Number(currentLocation.longitude);
 
-                        let addRadius = ADD_RADIUS;
-                        r += addRadius;
+                let addRadius = ADD_RADIUS;
+                r += addRadius;
 
-                        if (eventInformation.secret === data.eventSecretScanned) {
+                let eventSecretScanned = store.getState().dataScanned.eventSecretScanned;
 
-                            if (((x - x1) * (x - x1) + (y - y1) * (y - y1) - r * r) < 0) {
-                                let attendance = db.ref(attendancePath).push();
-                                attendance
-                                    .set({
-                                        regNumber: regNumber,
-                                        name: studentName,
-                                        time: time,
-                                        comment: comment,
-                                        deviceId: deviceId,
-                                        manufacturer: manufacturer
-                                    })
-                                    .then(() => {
-                                        Alert.alert("Attendance Marked");
+                if (eventInformation.secret === eventSecretScanned) {
 
-                                    })
-                                    .catch((error) => {
-                                        Alert.alert(error.message);
+                    if (((x - x1) * (x - x1) + (y - y1) * (y - y1) - r * r) < 0) {
+                        let attendance = db.ref(attendancePath).push();
+                        attendance
+                            .set({
+                                regNumber: regNumber,
+                                name: studentName,
+                                time: time,
+                                comment: comment,
+                                deviceId: deviceId,
+                                manufacturer: manufacturer
+                            })
+                            .then(() => {
+                                Alert.alert("Attendance Marked");
+                                setEnableScan(true);
 
-                                    });
-                            }
-                            else {
-                                Alert.alert("Please be present near teacher!");
-                            }
-                        }
-                    })
-                    .catch((error) => {
-                        Alert.alert(error.message);
-                    })
+                            })
+                            .catch((error) => {
+                                Alert.alert(error.message);
+                                setEnableScan(false);
+
+                            });
+                    }
+                    else {
+                        Alert.alert("Please be present near teacher!");
+                        setEnableScan(false);
+                    }
+                }
+                else{
+                    Alert.alert('Invalid event secret');
+                    setEnableScan(false);
+                }
+            })
+            .catch((error) => {
+                Alert.alert(error.message);
             })
 
     }

@@ -80,8 +80,8 @@ const QRCodeScanScreen = props => {
             ref={scanAgain}
             bottomContent={
                 <View>
-                    <ActivityIndicator animating={displayIndicator} />
-                    <TouchableOpacity style={styles.buttonTouchable} onPress={onScanAgain} disabled={displayIndicator}>
+                    {/* <ActivityIndicator animating={displayIndicator} /> */}
+                    <TouchableOpacity style={styles.buttonTouchable} onPress={onScanAgain}>
                         <Text style={styles.buttonText}>Scan Again</Text>
                     </TouchableOpacity>
                 </View>

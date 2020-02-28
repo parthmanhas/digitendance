@@ -8,20 +8,26 @@ const QRSuccess = props => {
 
     const [text, setText] = useState('');
     const [disableDone, setDisableDone] = useState(false);
+    const [enableScan, setEnableScan] = useState(true);
 
     const data = store.getState().dataScanned;
     const studentName = store.getState().studentDetails.name;
     const regNumber = store.getState().studentDetails.regNumber;
 
     const onDonePress = () => {
+        // console.log(store.getState().dataScanned);
         setDisableDone(true);
         let time = new Date().toString().substring(16, 24);
-        firebaseWrapper.QRCodeScan(data, studentName, regNumber, text, time);
+        firebaseWrapper.QRCodeScan(data, studentName, regNumber, text, time, setEnableScan);
 
     }
 
     const onExitPress = () => {
         BackHandler.exitApp();
+    }
+
+    const onScanAgain = () => {
+        props.navigation.navigate('QRScan');
     }
 
     return (
@@ -42,8 +48,12 @@ const QRSuccess = props => {
                         <Button title='Done' disabled={disableDone} onPress={onDonePress} />
                     </View>
                     <View style={styles.button}>
-                        <Button title='Exit' onPress={onExitPress}/>
+                        <Button title='Exit' onPress={onExitPress} />
                     </View>
+
+                </View>
+                <View style={styles.button}>
+                    <Button title='Scan Again' disabled={enableScan} onPress={onScanAgain} />
                 </View>
             </View>
         </View>

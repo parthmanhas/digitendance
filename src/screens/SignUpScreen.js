@@ -10,20 +10,22 @@ const SignUpScreen = props => {
     const [disableButton, setDisableButton] = useState(false);
 
     const signUpUser = (email, password) => {
-        //display error when something goes wrong
+        // display error when something goes wrong
         setDisableButton(true);
         try {
             if (password.length < 6) {
-                Alert.alert("Please enter more than 6 characters");
+                Alert.alert("Please enter more than 5 characters password");
                 setDisableButton(false);
                 return;
             }
 
-            firebaseWrapper.SignUp(username, email, setDisableButton);
+            firebaseWrapper.SignUp(email, password, setDisableButton, props);
         }
         catch (error) {
-            Alert.alert(error);
+            Alert.alert('An error has occured');
+            console.log(error.toString());
         }
+        console.log('done');
     }
 
     const handleEmailInput = email => {
