@@ -8,7 +8,7 @@ const EnterDetailsScreen = props => {
 
     //$ TODO REMOVE DEFAULT VALUES
     const [regNumber, setRegNumber] = useState('169105124');
-    const [name, setName] = useState('Parth Manhas');
+    const [name, setName] = useState('PARTH MANHAS');
     const [disableButton, setDisableButton] = useState(false);
 
     const handleNameInput = name => {

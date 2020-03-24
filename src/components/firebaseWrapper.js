@@ -20,8 +20,8 @@ export function SignUp(email, password, setDisableButton, props) {
 
 export function Login(email, password, props, setShowActivityIndicator) {
     //$TODO REMOVE THIS LOGIN
-    // email = 'student1@gmail.com';
-    // password = 'student1';
+    email = 'student1@gmail.com';
+    password = 'student1';
     firebase.auth().signInWithEmailAndPassword(email, password)
         .then(() => {
             setShowActivityIndicator(false);
@@ -33,9 +33,20 @@ export function Login(email, password, props, setShowActivityIndicator) {
         });
 }
 
-export function QRCodeScan(data, studentName, regNumber, comment, time, setEnableScan) {
+export async function QRCodeScan(data, comment, time, setActiveButtons, setEnableActivityIndicator) {
+    
+    setEnableActivityIndicator(true);
+    setActiveButtons({
+        'done': false,
+        'exit': false,
+        'scanAgain': false
+    });
 
     const db = firebase.database();
+
+    const studentName = store.getState().studentDetails.name;
+    const regNumber = store.getState().studentDetails.regNumber;
+
 
     const path = `${data.teacherName}/${data.eventDate}/${data.eventName}`;
     const eventInformationPath = path + '/eventInformation';
@@ -44,13 +55,20 @@ export function QRCodeScan(data, studentName, regNumber, comment, time, setEnabl
     let eventInformation;
     let deviceId;
     let manufacturer;
+    let currentTimeFromAnyGoodServer;
+
+    const fetchTime = async () => {
+        let response = await fetch('https://www.google.com', {method : 'GET'});
+        currentTimeFromAnyGoodServer = new Date(response.headers.get('Date')).toString().substr(16, 5);
+    }
+    fetchTime();
 
     deviceId = getDeviceId();
     getManufacturer()
         .then(m => manufacturer = m)
         .catch(e => {
             // Alert.alert(e.message);
-            manufacturer= 'null';
+            manufacturer = 'null';
         })
 
 
@@ -73,6 +91,82 @@ export function QRCodeScan(data, studentName, regNumber, comment, time, setEnabl
         //     })
         //     .then(() => { })
 
+        //verifyLocationAndThenMarkAttendance();
+
+        firebase.database().ref(eventInformationPath).once('value')
+            .then((snap) => {
+                eventInformation = snap.val();
+            })
+            .then(() => {
+                let eventSecretScanned = store.getState().dataScanned.eventSecretScanned;
+                console.log(eventInformation.expiryTime);
+                console.log(currentTimeFromAnyGoodServer);
+                let time1 = currentTimeFromAnyGoodServer + ':00';
+                let time2 = eventInformation.expiryTime.trim(' ') + ':00';
+                console.log(time1);
+                console.log(time2);
+                console.log(time1 < time2);
+                if (eventInformation.secret === eventSecretScanned && time1 < time2) {
+                    let attendance = db.ref(attendancePath).push();
+                    attendance
+                        .set({
+                            regNumber: regNumber,
+                            name: studentName,
+                            time: time,
+                            comment: comment,
+                            deviceId: deviceId,
+                            manufacturer: manufacturer
+                        })
+                        .then(() => {
+                            Alert.alert("Attendance Marked");
+                            setActiveButtons({
+                                'done': false,
+                                'exit': true,
+                                'scanAgain': false
+                            });
+
+                        })
+                        .catch((error) => {
+                            Alert.alert(error.message);
+                            setActiveButtons({
+                                'done': false,
+                                'exit': true,
+                                'scanAgain': true
+                            });
+                        });
+                }
+                else if(eventInformation.secret != eventSecretScanned) {
+                    Alert.alert('Invalid Secret, Please Try Again');
+                    setActiveButtons({
+                        'done': false,
+                        'exit': true,
+                        'scanAgain': true
+                    });
+                }
+                else if(currentTimeFromAnyGoodServer > eventInformation.expiryTime){
+                    Alert.alert('Time expired');
+                    setActiveButtons({
+                        'done': false,
+                        'exit': true,
+                        'scanAgain': false
+                    });
+                }
+                else{
+                    Alert.alert('Attendance not marked, Please try again!');
+                    setActiveButtons({
+                        'done': false,
+                        'exit': true,
+                        'scanAgain': true
+                    });
+                }
+            })
+
+    
+    }
+
+    
+
+    function verifyLocationAndThenMarkAttendance() {
         firebase.database().ref(eventInformationPath).once('value')
             .then((snap) => {
                 eventInformation = snap.val();
@@ -121,9 +215,9 @@ export function QRCodeScan(data, studentName, regNumber, comment, time, setEnabl
                         setEnableScan(false);
                     }
                 }
-                else{
+                else {
                     Alert.alert('Invalid event secret');
-                    setEnableScan(false);
+                    setEnableScan(true);
                 }
             })
             .catch((error) => {
@@ -131,7 +225,7 @@ export function QRCodeScan(data, studentName, regNumber, comment, time, setEnabl
             })
 
     }
-
+    setEnableActivityIndicator(false);
 }
 
 

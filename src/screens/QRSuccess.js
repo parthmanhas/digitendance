@@ -7,18 +7,20 @@ import { BackHandler } from 'react-native';
 const QRSuccess = props => {
 
     const [text, setText] = useState('');
-    const [disableDone, setDisableDone] = useState(false);
-    const [enableScan, setEnableScan] = useState(true);
+    const [enableActivityIndicator, setEnableActivityIndicator] = useState(false);
+
+    const [activeButtons, setActiveButtons] = useState({
+        'done': true,
+        'exit': true,
+        'scanAgain': false
+    })
 
     const data = store.getState().dataScanned;
-    const studentName = store.getState().studentDetails.name;
-    const regNumber = store.getState().studentDetails.regNumber;
-
+    
     const onDonePress = () => {
         // console.log(store.getState().dataScanned);
-        setDisableDone(true);
         let time = new Date().toString().substring(16, 24);
-        firebaseWrapper.QRCodeScan(data, studentName, regNumber, text, time, setEnableScan);
+        firebaseWrapper.QRCodeScan(data, text, time, setActiveButtons, setEnableActivityIndicator);
 
     }
 
@@ -33,6 +35,7 @@ const QRSuccess = props => {
     return (
         <View style={styles.screen}>
             <Text style={{ fontSize: 22, fontWeight: 'bold', marginBottom: 20 }}>QR Scanned Success </Text>
+            <ActivityIndicator animating={enableActivityIndicator} />
             <View style={styles.textInputView}>
                 <Text style={{ fontSize: 18, marginBottom: 10 }}>Additional Comments</Text>
                 <TextInput
@@ -45,15 +48,15 @@ const QRSuccess = props => {
                 <View style={styles.buttonArea}>
 
                     <View style={styles.button}>
-                        <Button title='Done' disabled={disableDone} onPress={onDonePress} />
+                        <Button title='Done' disabled={!activeButtons.done} onPress={onDonePress} />
                     </View>
                     <View style={styles.button}>
-                        <Button title='Exit' onPress={onExitPress} />
+                        <Button title='Exit' disabled={!activeButtons.exit} onPress={onExitPress} />
                     </View>
 
                 </View>
                 <View style={styles.button}>
-                    <Button title='Scan Again' disabled={enableScan} onPress={onScanAgain} />
+                    <Button title='Scan Again' disabled={!activeButtons.scanAgain} onPress={onScanAgain} />
                 </View>
             </View>
         </View>

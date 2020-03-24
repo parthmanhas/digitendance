@@ -19,7 +19,8 @@ const QRCodeScanScreen = props => {
         'teacherName': null,
         'eventName': null,
         'eventDate': null,
-        'eventSecretScanned': null
+        'eventSecretScanned': null,
+        'eventExpiryTime': null
     });
     const [path, setPath] = useState();
 
@@ -43,13 +44,13 @@ const QRCodeScanScreen = props => {
 
         //global access to data scanned
         
-
         const splitData = e.data.split(';');
         setData({
             'teacherName': splitData[0],
             'eventName': splitData[1],
             'eventDate': splitData[2],
-            'eventSecretScanned': splitData[3]
+            'eventSecretScanned': splitData[3],
+            'eventExpiryTime': splitData[4]
         });
 
         // // let bytes = CryptoJS.AES.decrypt(e.data, 'secret key 123');
