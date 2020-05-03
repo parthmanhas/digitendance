@@ -1,0 +1,38 @@
+Folder PATH listing
+Volume serial number is DC8D-D69B
+D:.
+|   directory.txt
+|   
++---assets
+|       logo.png
+|       
++---components
+|       firebaseWrapper.js
+|       location.js
+|       
++---constants
+|       color.js
+|       
++---navigation
+|       DigitendanceNavigator.js
+|       
++---screens
+|       EnterDetailsScreen.js
+|       HomeScreen.js
+|       QRCodeScanScreen.js
+|       QRSuccess.js
+|       SignUpScreen.js
+|       
+\---store
+    |   store.js
+    |   
+    +---actions
+    |       dataScanned.js
+    |       location.js
+    |       studentDetails.js
+    |       
+    \---reducers
+            dataScanned.js
+            location.js
+            studentDetails.js
+            

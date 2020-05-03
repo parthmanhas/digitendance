@@ -12,20 +12,24 @@ const SignUpScreen = props => {
     const signUpUser = (email, password) => {
         // display error when something goes wrong
         setDisableButton(true);
-        try {
-            if (password.length < 6) {
-                Alert.alert("Please enter more than 5 characters password");
-                setDisableButton(false);
-                return;
-            }
 
-            firebaseWrapper.SignUp(email, password, setDisableButton, props);
+        if (password.length < 6) {
+            Alert.alert("Please enter more than 5 characters password");
+            setDisableButton(false);
         }
-        catch (error) {
-            Alert.alert('An error has occured');
-            console.log(error.toString());
+        else {
+            firebaseWrapper.SignUp(email.trim(), password.trim())
+                .then((result) => {
+                    setDisableButton(false);
+                    Alert.alert('Sign Up successful! Please Log in')
+                    props.navigation.pop();
+                })
+                .catch(err => {
+                    Alert.alert('Error', err.message);
+                    setDisableButton(false);
+                })
         }
-        console.log('done');
+
     }
 
     const handleEmailInput = email => {
@@ -53,7 +57,7 @@ const SignUpScreen = props => {
                                     value={email}
                                 />
                             </Item>
-                            <Item floatingLabel>
+                            <Item floatingLabel style={{ marginTop: 10 }}>
                                 <Label>Password</Label>
                                 <Input
                                     secureTextEntry={true}
@@ -65,11 +69,10 @@ const SignUpScreen = props => {
                                 onPress={() => signUpUser(email, password)}
                                 style={{ marginTop: 10 }}
                                 full
-                                rounded
-                                primary
+                                style={disableButton ? { backgroundColor: '#bdbdbd', borderRadius: 6, marginTop: 15 } : { backgroundColor: '#26a69a', borderRadius: 6, marginTop: 15 }}
                                 disabled={disableButton}
                             >
-                                <Text style={{ color: 'white' }}>Sign Up</Text>
+                                <Text style={{ color: 'white', fontSize: 18 }}>Sign Up</Text>
                             </Button>
                         </Body>
                     </CardItem>

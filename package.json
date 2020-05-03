@@ -16,6 +16,7 @@
     "native-base": "^2.13.8",
     "react": "16.9.0",
     "react-native": "0.61.5",
+    "react-native-base64": "0.0.2",
     "react-native-camera": "^3.15.1",
     "react-native-crypto-js": "^1.0.0",
     "react-native-device-info": "^5.5.3",

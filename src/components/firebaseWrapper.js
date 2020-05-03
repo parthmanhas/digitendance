@@ -5,17 +5,16 @@ import { getDeviceId, getManufacturer } from 'react-native-device-info';
 
 const ADD_RADIUS = 250;
 
-export function SignUp(email, password, setDisableButton, props) {
-    firebase.auth().createUserWithEmailAndPassword(email, password)
-        .then(() => {
-            Alert.alert("Sign Up Successful! Please Login!");
-            setDisableButton(false);
-            props.navigation.pop();
-        })
-        .catch(error => {
-            Alert.alert(error.message);
-            setDisableButton(false);
-        })
+export function SignUp(email, password) {
+    return new Promise((resolve, reject) => {
+        firebase.auth().createUserWithEmailAndPassword(email, password)
+            .then(() => {
+                resolve('success');
+            })
+            .catch(err => {
+                reject(err);
+            })
+    })
 }
 
 export function Login(email, password, props, setShowActivityIndicator) {
@@ -33,21 +32,14 @@ export function Login(email, password, props, setShowActivityIndicator) {
         });
 }
 
-export async function QRCodeScan(data, comment, time, setActiveButtons, setEnableActivityIndicator) {
-    
-    setEnableActivityIndicator(true);
-    setActiveButtons({
-        'done': false,
-        'exit': false,
-        'scanAgain': false
-    });
+export function QRCodeScan(comment, time) {
 
     const db = firebase.database();
 
     const studentName = store.getState().studentDetails.name;
     const regNumber = store.getState().studentDetails.regNumber;
 
-
+    const data = store.getState().dataScanned;
     const path = `${data.teacherName}/${data.eventDate}/${data.eventName}`;
     const eventInformationPath = path + '/eventInformation';
     const attendancePath = path + '/attendance';
@@ -58,7 +50,7 @@ export async function QRCodeScan(data, comment, time, setActiveButtons, setEnabl
     let currentTimeFromAnyGoodServer;
 
     const fetchTime = async () => {
-        let response = await fetch('https://www.google.com', {method : 'GET'});
+        let response = await fetch('https://www.google.com', { method: 'GET' });
         currentTimeFromAnyGoodServer = new Date(response.headers.get('Date')).toString().substr(16, 5);
     }
     fetchTime();
@@ -73,26 +65,6 @@ export async function QRCodeScan(data, comment, time, setActiveButtons, setEnabl
 
 
     if (path) {
-        // let data;
-        // console.log(attendancePath);
-        // firebase.database().ref(attendancePath).once('value')
-        //     .then(snap => {
-        //         data = snap.val();
-        //         console.log(data);
-        //         for (const uniqueKey in data) {
-        //             for (const value in data[uniqueKey]) {
-        //                 if (value === 'deviceId' && deviceId === data[uniqueKey][value]) {
-        //                     Alert.alert('Device has been already used!');
-        //                     return;
-        //                 }
-        //             }
-        //         }
-        //         return;
-        //     })
-        //     .then(() => { })
-
-        //verifyLocationAndThenMarkAttendance();
-
         firebase.database().ref(eventInformationPath).once('value')
             .then((snap) => {
                 eventInformation = snap.val();
@@ -135,7 +107,7 @@ export async function QRCodeScan(data, comment, time, setActiveButtons, setEnabl
                             });
                         });
                 }
-                else if(eventInformation.secret != eventSecretScanned) {
+                else if (eventInformation.secret != eventSecretScanned) {
                     Alert.alert('Invalid Secret, Please Try Again');
                     setActiveButtons({
                         'done': false,
@@ -143,7 +115,7 @@ export async function QRCodeScan(data, comment, time, setActiveButtons, setEnabl
                         'scanAgain': true
                     });
                 }
-                else if(currentTimeFromAnyGoodServer > eventInformation.expiryTime){
+                else if (currentTimeFromAnyGoodServer > eventInformation.expiryTime) {
                     Alert.alert('Time expired');
                     setActiveButtons({
                         'done': false,
@@ -151,7 +123,7 @@ export async function QRCodeScan(data, comment, time, setActiveButtons, setEnabl
                         'scanAgain': false
                     });
                 }
-                else{
+                else {
                     Alert.alert('Attendance not marked, Please try again!');
                     setActiveButtons({
                         'done': false,
@@ -161,10 +133,10 @@ export async function QRCodeScan(data, comment, time, setActiveButtons, setEnabl
                 }
             })
 
-    
+
     }
 
-    
+
 
     function verifyLocationAndThenMarkAttendance() {
         firebase.database().ref(eventInformationPath).once('value')

@@ -46,22 +46,22 @@ const HomeScreen = props => {
                         full
                         success
                         disabled={showActivityIndicator}
-                        style={{ borderRadius: 6 }}
+                        style={showActivityIndicator ? { borderRadius: 6, backgroundColor: '#bdbdbd' } : { borderRadius: 6, backgroundColor: '#009688' }}
                         onPress={() => loginUser(email, password)}
                     >
-                        <Text style={{ color: 'white' }}>Login</Text>
+                        <Text style={{ color: 'white', fontSize: 18 }}>Login</Text>
                     </Button>
                 </View>
 
                 <View>
                     <Button
-                        onPress={() => props.navigation.navigate('SignUp')}
-                        style={{ marginTop: 10, borderRadius: 6 }}
+                        onPress={() => props.navigation.navigate('SignUpScreen')}
+                        style={showActivityIndicator ? { marginTop: 10, borderRadius: 6, backgroundColor: '#bdbdbd' } : { marginTop: 10, borderRadius: 6, backgroundColor: '#4db6ac' }}
                         full
                         primary
                         disabled={showActivityIndicator}
                     >
-                        <Text style={{ color: 'white' }}>Sign Up</Text>
+                        <Text style={{ color: 'white', fontSize: 18 }}>Sign Up</Text>
                     </Button>
                 </View>
             </Form>

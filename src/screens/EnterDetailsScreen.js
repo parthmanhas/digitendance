@@ -7,9 +7,9 @@ import { setStudentDetails } from '../store/actions/studentDetails';
 const EnterDetailsScreen = props => {
 
     //$ TODO REMOVE DEFAULT VALUES
-    const [regNumber, setRegNumber] = useState('169105124');
-    const [name, setName] = useState('PARTH MANHAS');
-    const [disableButton, setDisableButton] = useState(false);
+    const [regNumber, setRegNumber] = useState('');
+    const [name, setName] = useState('');
+    const [disableButton, setDisableButton] = useState(true);
 
     const handleNameInput = name => {
         setName(name);
@@ -37,10 +37,7 @@ const EnterDetailsScreen = props => {
         }
         store.dispatch(setStudentDetails({ name: name, regNumber: regNumber }))
 
-        props.navigation.navigate('QRScan', {
-            studentName: name,
-            studentRegNumber: regNumber
-        });
+        props.navigation.navigate('QRScan');
     }
 
     return (
@@ -49,7 +46,7 @@ const EnterDetailsScreen = props => {
             <Content padder>
                 <Card style={{ backgroundColor: 'yellow' }}>
                     <CardItem header >
-                        <Text style={{fontSize: 22, fontWeight:'bold'}}>Enter Details</Text>
+                        <Text style={{ fontSize: 22, fontWeight: 'bold' }}>Enter Details</Text>
                     </CardItem>
                     <CardItem>
                         <Body>
@@ -73,9 +70,9 @@ const EnterDetailsScreen = props => {
                                 success
                                 disabled={disableButton}
                                 onPress={handleNavigation}
-                                style={styles.button}
+                                style={disableButton ? { ...styles.button, backgroundColor: '#bdbdbd' } : { ...styles.button, backgroundColor: '#26a69a' }}
                             >
-                                <Text style={{ color: 'white' }}>Proceed</Text>
+                                <Text style={{ color: 'white', fontSize: 18 }}>Proceed</Text>
                             </Button>
 
                         </Body>
@@ -93,7 +90,7 @@ const styles = StyleSheet.create({
         margin: 10,
         alignContent: 'center'
     },
-    button:{
+    button: {
         borderRadius: 6
     }
 });

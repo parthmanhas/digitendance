@@ -14,7 +14,7 @@ const DigitendanceNavigator = createStackNavigator({
     QRScan: {
         screen: QRCodeScanScreen,
     },
-    SignUp: {
+    SignUpScreen: {
         screen: SignUpScreen,
     },
     EnterDetails: {

@@ -2,9 +2,12 @@ import { SET_DATA_SCANNED } from "../actions/dataScanned";
 
 const initialDataScannedState = {
     teacherName: '',
-    eventName:'',
+    eventName: '',
     eventDate: '',
-    eventSecretScanned: ''
+    eventSecret: '',
+    eventTime: '',
+    eventExpiryTime: '',
+    eventType: ''
 }
 
 const dataScannedReducer = (state = initialDataScannedState, action) => {
@@ -15,7 +18,10 @@ const dataScannedReducer = (state = initialDataScannedState, action) => {
                 teacherName: action.data.teacherName,
                 eventName: action.data.eventName,
                 eventDate: action.data.eventDate,
-                eventSecretScanned: action.data.eventSecretScanned
+                eventSecret: action.data.eventSecret,
+                eventTime: action.data.eventTime,
+                eventExpiryTime: action.data.eventExpiryTime,
+                eventType: action.data.eventType
             }
         default:
             return state
