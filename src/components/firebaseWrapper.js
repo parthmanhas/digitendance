@@ -18,9 +18,9 @@ export function SignUp(email, password) {
 }
 
 export function Login(email, password, props, setShowActivityIndicator) {
-    //$TODO REMOVE THIS LOGIN
-    email = 'student1@gmail.com';
-    password = 'student1';
+    // //$TODO REMOVE THIS LOGIN
+    // email = 'student1@gmail.com';
+    // password = 'student1';
     firebase.auth().signInWithEmailAndPassword(email, password)
         .then(() => {
             setShowActivityIndicator(false);

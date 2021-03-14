@@ -16,6 +16,7 @@ import { PermissionsAndroid } from 'react-native';
 import { setLocation } from './src/store/actions/location';
 import Geolocation from 'react-native-geolocation-service';
 
+console.disableYellowBox = true;
 
 const App: () => React$Node = () => {
 
